@@ -16,3 +16,5 @@ class UserModel(Base):
 
     meter_types = relationship(MeterType, secondary=user_meter_type_association_table, back_populates='users')
 
+    def __repr__(self):
+        return f'{self.id}: user'
