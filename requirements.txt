@@ -2,3 +2,5 @@ SQLAlchemy==1.4.25
 python-environ==0.4.54
 psycopg2-binary==2.9.1
 alembic==1.7.4
+autobahn==21.3.1
+pydantic==1.8.2
