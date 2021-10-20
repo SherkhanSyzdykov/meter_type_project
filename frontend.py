@@ -1,11 +1,18 @@
-from os import environ
-from autobahn.asyncio.wamp import ApplicationRunner
+from autobahn.asyncio.component import Component, run
 
-from meter_type.components import MeterTypeFrontendComponent
+
+component = Component(transports='ws://localhost:8080/ws', realm='realm1')
+
+
+@component.on_join
+async def joined(session, details):
+    print('Joined frontend')
+    meter_types_res = await session.call('get_meter_types')
+    print('Meter types list res: {}'.format(meter_types_res))
+    create_meter_type_res = await session.call('create_meter_type', json_data='{"name": "test_wamp_json1"}')
+    print('Create meter type res: {}'.format(create_meter_type_res))
+    await session.leave()
 
 
 if __name__ == '__main__':
-    url = environ.get("AUTOBAHN_DEMO_ROUTER", "ws://127.0.0.1:8080/ws")
-    realm = "realm1"
-    runner = ApplicationRunner(url, realm)
-    runner.run(MeterTypeFrontendComponent)
+    run([component])

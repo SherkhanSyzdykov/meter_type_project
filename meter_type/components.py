@@ -1,27 +1,35 @@
 from typing import List
-import asyncio
-from autobahn.asyncio.wamp import ApplicationSession
+from autobahn.asyncio.component import Component
 
-from .schemas import MeterTypeRead, MeterTypeCreate, MeterTypesList
+from .schemas import MeterTypeCreate, MeterTypesList
 from .services import MeterTypeQuery
 from .models import MeterType
+from .provider import MeterTypeProvider
 
 
-class MeterTypeBackendComponent(ApplicationSession):
-    async def onJoin(self, details):
-        def get_meter_types():
-            orm_meter_types: List[MeterType] = MeterTypeQuery.get().all()
-            return MeterTypesList.from_orm(orm_meter_types).json()
-
-        await self.register(get_meter_types, 'get_meter_types')
+component = Component(
+    transports='ws://localhost:8080/ws',
+    realm='realm1'
+)
 
 
-class MeterTypeFrontendComponent(ApplicationSession):
-    async def onJoin(self, details):
-        res = await self.call('get_meter_types')
-        print(res)
+@component.on_join
+async def joined(session, details):
+    print('Session ready')
 
-        self.leave()
 
-    def onDisconnect(self):
-        asyncio.get_event_loop().stop()
+@component.on_leave
+async def left(session, details):
+    print('Session close')
+
+
+@component.register('get_meter_types')
+async def get_meter_types() -> str:
+    orm_meter_types: List[MeterType] = MeterTypeQuery.get().all()
+    return MeterTypesList.from_orm(orm_meter_types).json()
+
+
+@component.register('create_meter_type')
+async def create_meter_type(json_data: str):
+    meter_type = MeterTypeCreate.parse_raw(json_data)
+    MeterTypeProvider.create(**meter_type.dict())
