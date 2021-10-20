@@ -23,6 +23,7 @@ async def left(session, details):
     print('Session close')
 
 
+
 @component.register('get_meter_types')
 async def get_meter_types() -> str:
     orm_meter_types: List[MeterType] = MeterTypeQuery.get().all()
