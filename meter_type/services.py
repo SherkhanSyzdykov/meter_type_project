@@ -1,18 +1,22 @@
 from sqlalchemy.orm import Query
+from user.models import UserModel
 
 from .models import MeterType
 from .provider import MeterTypeProvider
 
 
-class UserMeterTypesQuery:
-    @classmethod
-    def get_base_query(cls, user_id: int) -> Query:
-        return MeterTypeProvider.get_user_meter_types(user_id)
+class MeterTypeQuery:
+    @staticmethod
+    def get() -> Query:
+        return MeterTypeProvider.get_query()
 
-    @classmethod
-    def created_acs(cls, user_id: int) -> Query:
-        return cls.get_base_query(user_id).order_by(MeterType.created_at)
+    @staticmethod
+    def user_meter_types(user_id: int) -> Query:
+        return MeterTypeProvider.get_query().join(MeterType.users).filter(UserModel.id == user_id)
 
-    @classmethod
-    def created_desc(cls, user_id: int) -> Query:
-        return cls.get_base_query(user_id).order_by(MeterType.created_at.desc())
+    @staticmethod
+    def ordered_by_created_at_field(*, desc=False) -> Query:
+        attr_for_order = MeterType.created_at if not desc else MeterType.created_at.desc()
+        return MeterTypeProvider.get_query().order_by(attr_for_order)
+
+
