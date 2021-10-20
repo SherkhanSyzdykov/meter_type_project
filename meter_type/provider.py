@@ -9,8 +9,13 @@ from .schemas import MeterTypesList, MeterTypeRead
 
 class MeterTypeProvider:
     @staticmethod
-    def get_by_id(id: int) -> MeterTypeRead:
-        orm_meter_type = session.query(MeterType).filter(MeterType.id == id).first()
+    def get_many_with_filter_by(**attrs_for_filter) -> MeterTypesList:
+        orm_meter_types = session.query(MeterType).filter_by(**attrs_for_filter).all()
+        return MeterTypesList.from_orm(orm_meter_types)
+
+    @staticmethod
+    def get_one_with_filter_by(**attrs_for_filter) -> MeterTypeRead:
+        orm_meter_type = session.query(MeterType).filter_by(**attrs_for_filter).first()
         return MeterTypeRead.from_orm(orm_meter_type)
 
     @staticmethod
