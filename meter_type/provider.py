@@ -1,16 +1,27 @@
-from typing import List
+from typing import List, Optional
 
-from sqlalchemy.orm import Query
 from database import session
 from user.models import UserModel
 
 from .models import MeterType
+from .schemas import MeterTypesList, MeterTypeRead
 
 
 class MeterTypeProvider:
     @staticmethod
-    def get_query() -> Query:
-        return session.query(MeterType)
+    def get_by_id(id: int) -> MeterTypeRead:
+        orm_meter_type = session.query(MeterType).filter(MeterType.id == id).first()
+        return MeterTypeRead.from_orm(orm_meter_type)
+
+    @staticmethod
+    def get_all() -> MeterTypesList:
+        orm_meter_types = session.query(MeterType).all()
+        return MeterTypesList.from_orm(orm_meter_types)
+
+    @staticmethod
+    def get_user_meter_types(user_id: int) -> MeterTypesList:
+        orm_meter_types = session.query(MeterType).join(MeterType.users).filter(UserModel.id == user_id).all()
+        return MeterTypesList.from_orm(orm_meter_types)
 
     @staticmethod
     def create(**meter_type_fields):

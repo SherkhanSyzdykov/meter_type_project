@@ -17,7 +17,7 @@ class MeterType(Base):
 
     created_at = Column(DateTime, default=datetime.now())
 
-    users = relationship('UserModel', secondary='user_meter_type_association', back_populates='meter_types')
+    users = relationship('UserModel', secondary='user_meter_type_association')
 
     def __repr__(self):
         return f'{self.id}: meter_type'

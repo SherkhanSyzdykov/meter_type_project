@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Table, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from database import Base
 from meter_type.models import MeterType
 
@@ -14,7 +14,7 @@ class UserModel(Base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String(250))
 
-    meter_types = relationship(MeterType, secondary=user_meter_type_association_table, back_populates='users')
+    meter_types = relationship(MeterType, secondary=user_meter_type_association_table)
 
     def __repr__(self):
         return f'{self.id}: user'
