@@ -11,7 +11,7 @@ class MeterTypeService:
 
     @staticmethod
     def get_meter_type(meter_type_id: int) -> MeterTypeRead:
-        return MeterTypeProvider.get_one_with_filter_by(id=meter_type_id)
+        return MeterTypeProvider.get_one_with_filter(id=meter_type_id)
 
     @staticmethod
     def get_user_meter_types(user_id: int) -> MeterTypesList:
